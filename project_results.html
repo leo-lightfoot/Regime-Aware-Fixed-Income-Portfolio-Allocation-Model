@@ -1,0 +1,2400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regime-Aware Fixed Income Portfolio Allocation Model - Results</title>
+    <style>
+        /* ========== RESET & BASE STYLES ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Color Palette - Professional Blue/Gray */
+            --primary-dark: #1a365d;
+            --primary: #2c5282;
+            --primary-light: #4a90e2;
+            --accent: #3182ce;
+
+            /* Grays */
+            --gray-50: #f7fafc;
+            --gray-100: #edf2f7;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e0;
+            --gray-400: #a0aec0;
+            --gray-600: #718096;
+            --gray-700: #4a5568;
+            --gray-800: #2d3748;
+            --gray-900: #1a202c;
+
+            /* Semantic Colors */
+            --success-bg: #f0fff4;
+            --success-border: #38a169;
+            --success-text: #22543d;
+            --warning-bg: #fffaf0;
+            --warning-border: #dd6b20;
+            --warning-text: #7c2d12;
+            --info-bg: #ebf8ff;
+            --info-border: #3182ce;
+            --info-text: #2c5282;
+
+            /* Positive/Negative */
+            --positive: #047857;
+            --negative: #dc2626;
+
+            /* Typography */
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Courier New', monospace;
+
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            /* Border Radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: var(--font-sans);
+            line-height: 1.65;
+            color: var(--gray-800);
+            background-color: var(--gray-50);
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+        }
+
+        /* ========== TYPOGRAPHY ========== */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--gray-900);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; }
+        h3 { font-size: 1.5rem; }
+        h4 { font-size: 1.25rem; }
+        h5 { font-size: 1.125rem; }
+
+        p {
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.7;
+        }
+
+        ul, ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        li {
+            margin-bottom: var(--spacing-xs);
+            line-height: 1.7;
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        /* ========== NAVIGATION ========== */
+        nav {
+            background: var(--primary-dark);
+            color: white;
+            padding: var(--spacing-sm) 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+
+        nav h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: var(--spacing-lg);
+            margin: 0;
+        }
+
+        nav a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: var(--spacing-xs) 0;
+            border-bottom: 2px solid transparent;
+        }
+
+        nav a:hover {
+            color: white;
+            border-bottom-color: var(--primary-light);
+        }
+
+        /* ========== HERO SECTION ========== */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: var(--spacing-xl) 0;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-sm);
+            color: white;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.6;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .metric-card h3 {
+            font-size: 2.25rem;
+            margin-bottom: var(--spacing-xs);
+            color: white;
+            font-weight: 700;
+        }
+
+        .metric-card p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin: 0;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* ========== SECTIONS ========== */
+        section {
+            background: white;
+            margin-bottom: var(--spacing-lg);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        section h2 {
+            font-size: 2rem;
+            color: var(--primary-dark);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 3px solid var(--accent);
+            font-weight: 700;
+        }
+
+        section h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-top: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            font-weight: 600;
+        }
+
+        section h4 {
+            font-size: 1.2rem;
+            color: var(--gray-800);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+        }
+
+        section h5 {
+            font-size: 1.1rem;
+            color: var(--gray-700);
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+        }
+
+        /* ========== TABLES ========== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--spacing-md) 0;
+            font-size: 0.9rem;
+            background: white;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        th {
+            background: var(--primary-dark);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: var(--gray-50);
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--gray-100);
+        }
+
+        tr:nth-child(even):hover {
+            background-color: var(--gray-200);
+        }
+
+        .number {
+            font-family: var(--font-mono);
+            text-align: right;
+            font-size: 0.875rem;
+        }
+
+        /* ========== COLLAPSIBLE SECTIONS ========== */
+        .collapsible {
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            padding: var(--spacing-sm) var(--spacing-md);
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            margin-top: var(--spacing-md);
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .collapsible:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .collapsible:after {
+            content: '\002B';
+            font-size: 1.5rem;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible.active:after {
+            content: "\2212";
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: var(--gray-50);
+            border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+        }
+
+        .collapsible-content.active {
+            padding: var(--spacing-lg);
+            border: 1px solid var(--gray-200);
+            border-top: none;
+        }
+
+        /* ========== TABS ========== */
+        .tabs {
+            display: flex;
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-md);
+            border-bottom: 2px solid var(--gray-200);
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            font-family: var(--font-sans);
+        }
+
+        .tab-button:hover {
+            color: var(--primary);
+            background-color: var(--gray-50);
+        }
+
+        .tab-button.active {
+            color: var(--primary-dark);
+            border-bottom-color: var(--accent);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ========== IMAGES ========== */
+        .image-container {
+            margin: var(--spacing-lg) 0;
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+        }
+
+        .image-caption {
+            margin-top: var(--spacing-sm);
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            font-style: italic;
+            line-height: 1.6;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ========== INFO BOXES ========== */
+        .info-box {
+            background: var(--info-bg);
+            border-left: 4px solid var(--info-border);
+            padding: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+            border-radius: var(--radius-sm);
+        }
+
+        .info-box h4 {
+            color: var(--info-text);
+            margin-top: 0;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .info-box p {
+            color: var(--gray-700);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .info-box ul {
+            margin-bottom: 0;
+        }
+
+        .info-box.success {
+            background: var(--success-bg);
+            border-left-color: var(--success-border);
+        }
+
+        .info-box.success h4 {
+            color: var(--success-text);
+        }
+
+        .info-box.warning {
+            background: var(--warning-bg);
+            border-left-color: var(--warning-border);
+        }
+
+        .info-box.warning h4 {
+            color: var(--warning-text);
+        }
+
+        /* ========== GRID LAYOUTS ========== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .card {
+            background: white;
+            padding: var(--spacing-md);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--gray-300);
+        }
+
+        .card h4 {
+            margin-top: 0;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .card ul {
+            margin-left: var(--spacing-md);
+        }
+
+        /* ========== HIGHLIGHT ELEMENTS ========== */
+        .highlight {
+            background: #fef3c7;
+            padding: 0.15rem 0.4rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+        }
+
+        .positive {
+            color: var(--positive);
+            font-weight: 600;
+        }
+
+        .negative {
+            color: var(--negative);
+            font-weight: 600;
+        }
+
+        /* ========== FOOTER ========== */
+        footer {
+            background: var(--primary-dark);
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            padding: var(--spacing-xl) var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+        }
+
+        footer p {
+            margin-bottom: var(--spacing-xs);
+            font-size: 0.9rem;
+        }
+
+        /* ========== SMOOTH SCROLLING ========== */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* ========== RESPONSIVE DESIGN ========== */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 var(--spacing-sm);
+            }
+
+            nav .container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: var(--spacing-xs);
+                width: 100%;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            section {
+                padding: var(--spacing-lg);
+            }
+
+            section h2 {
+                font-size: 1.75rem;
+            }
+
+            section h3 {
+                font-size: 1.3rem;
+            }
+
+            .tabs {
+                overflow-x: auto;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                font-size: 14px;
+            }
+
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+
+            section h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <h1>Regime-Aware Fixed Income Model</h1>
+            <ul>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#methodology">Methodology</a></li>
+                <li><a href="#regime-analysis">Regimes</a></li>
+                <li><a href="#performance">Performance</a></li>
+                <li><a href="#crisis">Crisis Analysis</a></li>
+                <li><a href="#tables">Data Tables</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="container">
+            <h1>Regime-Aware Fixed Income Portfolio Allocation Model</h1>
+            <p>A dynamic fixed-income allocation strategy that adapts to changing geopolitical and economic policy regimes</p>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>1.89</h3>
+                    <p>Sharpe Ratio</p>
+                </div>
+                <div class="metric-card">
+                    <h3>5.89%</h3>
+                    <p>Annualized Return</p>
+                </div>
+                <div class="metric-card">
+                    <h3>3.11%</h3>
+                    <p>Annualized Volatility</p>
+                </div>
+                <div class="metric-card">
+                    <h3>-10.1%</h3>
+                    <p>Maximum Drawdown</p>
+                </div>
+                <div class="metric-card">
+                    <h3>+77%</h3>
+                    <p>Sharpe Improvement vs SAA</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Executive Summary -->
+        <section id="overview">
+            <h2>Executive Summary</h2>
+
+            <div class="info-box success">
+                <h4>Primary Mandate: Capital Preservation ✓</h4>
+                <p>Maximum drawdown of <strong>-10.1%</strong> vs SAA benchmark's <strong>-16.2%</strong> (37.8% improvement)</p>
+            </div>
+
+            <div class="info-box success">
+                <h4>Secondary Mandate: Positive Risk-Adjusted Returns ✓</h4>
+                <p>Sharpe ratio of <strong>1.89</strong> vs SAA benchmark's <strong>1.07</strong> (77.2% improvement)</p>
+            </div>
+
+            <h3>Project Overview</h3>
+            <p>This model implements a sophisticated regime-aware asset allocation engine designed for fixed-income portfolios. The strategy dynamically adjusts allocations based on macroeconomic indicators to detect market regimes and optimize for capital preservation while achieving positive risk-adjusted returns.</p>
+
+            <h3>Data Coverage</h3>
+            <ul>
+                <li><strong>Analysis Period:</strong> December 1969 - December 2024 (661 months)</li>
+                <li><strong>Asset Universe:</strong> 16 individual fixed-income and safe-haven assets</li>
+                <li><strong>Asset Classes:</strong> 8 strategic categories</li>
+                <li><strong>Macro Indicators:</strong> 12 policy and market-based signals</li>
+                <li><strong>Crisis Scenarios Tested:</strong> 6 historical periods including GFC, COVID, Inflation surge</li>
+            </ul>
+
+            <h3>Key Achievements</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Superior Risk-Adjusted Performance</h4>
+                    <ul>
+                        <li>Sharpe Ratio: 1.89 vs 1.07 (+77.2%)</li>
+                        <li>Sortino Ratio: 3.08 vs 1.64 (+87.8%)</li>
+                        <li>Calmar Ratio: 0.58 vs 0.32 (+82.0%)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>Enhanced Capital Preservation</h4>
+                    <ul>
+                        <li>Max Drawdown: -10.1% vs -16.2% (+37.8%)</li>
+                        <li>VaR 95%: -1.06% vs -1.80% (+41.0%)</li>
+                        <li>CVaR 95%: -1.53% vs -2.69% (+43.1%)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>Higher Returns with Lower Volatility</h4>
+                    <ul>
+                        <li>Ann. Return: 5.89% vs 5.18% (+13.6%)</li>
+                        <li>Ann. Volatility: 3.11% vs 4.85% (-35.9%)</li>
+                        <li>Win Rate: 73.2% vs 66.3%</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>Crisis Performance</h4>
+                    <ul>
+                        <li>Best Sharpe in Crisis Regime: 2.32</li>
+                        <li>GFC Max DD: -3.5% vs SAA -7.6%</li>
+                        <li>COVID Sharpe: 3.00 vs SAA 1.90</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Methodology -->
+        <section id="methodology">
+            <h2>Methodology</h2>
+
+            <h3>1. Regime Classification Framework</h3>
+            <p>The regime detection system combines policy-based and market-based indicators using dynamic inverse-variance weighting to identify four distinct market regimes.</p>
+
+            <h4>Primary Score (60% Weight): Policy-Based Indicators</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Indicator</th>
+                        <th>Weight</th>
+                        <th>Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Economic Policy Uncertainty (EPU)</td>
+                        <td class="number">60%</td>
+                        <td>Captures uncertainty around fiscal, regulatory, and monetary policy</td>
+                    </tr>
+                    <tr>
+                        <td>Geopolitical Risk (GPR)</td>
+                        <td class="number">15%</td>
+                        <td>Measures geopolitical tensions and war risk</td>
+                    </tr>
+                    <tr>
+                        <td>Inflation YoY</td>
+                        <td class="number">15%</td>
+                        <td>Tracks inflationary pressures affecting fixed income</td>
+                    </tr>
+                    <tr>
+                        <td>Government Spending/GDP</td>
+                        <td class="number">10%</td>
+                        <td>Indicates fiscal expansion or contraction</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Secondary Score (40% Weight): Market-Based Indicators</h4>
+            <ul>
+                <li><strong>VIX (Volatility Index):</strong> Market fear gauge</li>
+                <li><strong>Investment Grade Spreads:</strong> Credit market stress</li>
+                <li><strong>High Yield Spreads:</strong> Risk appetite indicator</li>
+                <li><strong>Unemployment Rate:</strong> Economic health measure</li>
+                <li><strong>Yield Curve Spread (10Y-2Y):</strong> Recession predictor</li>
+                <li><strong>10Y Treasury Yield Change:</strong> Interest rate dynamics</li>
+            </ul>
+
+            <h4>Dynamic Weighting & Signal Processing</h4>
+            <ul>
+                <li><strong>Inverse-Variance Weighting:</strong> Automatically adjusts weights based on 36-month rolling variance</li>
+                <li><strong>Z-Score Normalization:</strong> 60-month lookback window</li>
+                <li><strong>Percentile Calculation:</strong> 180-month rolling window</li>
+                <li><strong>Smoothing:</strong> Minimum regime duration of 6 months, max 3-month gap filling</li>
+            </ul>
+
+            <h4>Regime Definitions</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Regime</th>
+                        <th>Percentile Threshold</th>
+                        <th>Frequency</th>
+                        <th>Characteristics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Crisis</strong></td>
+                        <td class="number">&gt;80th (Top 20%)</td>
+                        <td class="number">20.9% (208 months)</td>
+                        <td>Extreme policy uncertainty, high volatility, market stress</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk-Off</strong></td>
+                        <td class="number">60th-80th</td>
+                        <td class="number">19.8% (197 months)</td>
+                        <td>Elevated uncertainty, defensive positioning</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Neutral</strong></td>
+                        <td class="number">40th-60th</td>
+                        <td class="number">18.8% (187 months)</td>
+                        <td>Moderate environment, balanced conditions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk-On</strong></td>
+                        <td class="number">&lt;40th (Bottom 40%)</td>
+                        <td class="number">40.6% (404 months)</td>
+                        <td>Low uncertainty, growth conditions, stable policy</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <button class="collapsible">2. Allocation Strategy Framework</button>
+            <div class="collapsible-content">
+                <h4>2.1 Regime-Specific Baseline Allocations</h4>
+                <p>Four distinct baseline allocation profiles designed for each regime:</p>
+
+                <h5>Crisis Regime Baseline</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Class</th>
+                            <th>Allocation</th>
+                            <th>Rationale</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cash/Short</td>
+                            <td class="number">35%</td>
+                            <td>Maximum liquidity and capital preservation</td>
+                        </tr>
+                        <tr>
+                            <td>Government Long</td>
+                            <td class="number">20%</td>
+                            <td>Flight-to-quality, safe haven</td>
+                        </tr>
+                        <tr>
+                            <td>TIPS Short</td>
+                            <td class="number">12%</td>
+                            <td>Inflation protection with low duration risk</td>
+                        </tr>
+                        <tr>
+                            <td>Investment Grade</td>
+                            <td class="number">12%</td>
+                            <td>High-quality corporate exposure</td>
+                        </tr>
+                        <tr>
+                            <td>Gold</td>
+                            <td class="number">7%</td>
+                            <td>Crisis hedge, store of value</td>
+                        </tr>
+                        <tr>
+                            <td>Others</td>
+                            <td class="number">14%</td>
+                            <td>Diversification (TIPS Long, HY, FX)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h5>Risk-Off Regime Baseline</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Class</th>
+                            <th>Allocation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Government Long</td><td class="number">30%</td></tr>
+                        <tr><td>Investment Grade</td><td class="number">25%</td></tr>
+                        <tr><td>Cash/Short</td><td class="number">20%</td></tr>
+                        <tr><td>TIPS (Combined)</td><td class="number">15%</td></tr>
+                        <tr><td>Others</td><td class="number">10%</td></tr>
+                    </tbody>
+                </table>
+
+                <h5>Neutral Regime Baseline</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Class</th>
+                            <th>Allocation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Investment Grade</td><td class="number">35%</td></tr>
+                        <tr><td>Government Long</td><td class="number">25%</td></tr>
+                        <tr><td>TIPS (Combined)</td><td class="number">15%</td></tr>
+                        <tr><td>High Yield</td><td class="number">12%</td></tr>
+                        <tr><td>Others</td><td class="number">13%</td></tr>
+                    </tbody>
+                </table>
+
+                <h5>Risk-On Regime Baseline</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Class</th>
+                            <th>Allocation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Investment Grade</td><td class="number">36%</td></tr>
+                        <tr><td>High Yield</td><td class="number">22%</td></tr>
+                        <tr><td>TIPS (Combined)</td><td class="number">15%</td></tr>
+                        <tr><td>Government Long</td><td class="number">15%</td></tr>
+                        <tr><td>Others</td><td class="number">12%</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>2.2 Tactical Tilts</h4>
+                <p>Continuous, signal-driven adjustments applied on top of baseline allocations:</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tilt Type</th>
+                            <th>Trigger Condition</th>
+                            <th>Action</th>
+                            <th>Max Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Inflation Tilt</td>
+                            <td>Inflation z-score &gt; 1.0</td>
+                            <td>+TIPS, -HY, -IG</td>
+                            <td class="number">±2-3pp</td>
+                        </tr>
+                        <tr>
+                            <td>Government Spending Tilt</td>
+                            <td>Gov spending z-score &gt; 0.8</td>
+                            <td>+Government, -HY</td>
+                            <td class="number">±1.5pp</td>
+                        </tr>
+                        <tr>
+                            <td>Combined Score Tilt</td>
+                            <td>Combined score &gt; 1.2</td>
+                            <td>+Defensive, -Risk</td>
+                            <td class="number">±1pp</td>
+                        </tr>
+                        <tr>
+                            <td>VIX Tail Hedge</td>
+                            <td>VIX &gt; 25</td>
+                            <td>+Gold, +FX (CHF/JPY)</td>
+                            <td class="number">±3pp each</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box warning">
+                    <h4>Tilt Constraints</h4>
+                    <ul>
+                        <li>Maximum single tilt: 15 percentage points</li>
+                        <li>Total maximum tilt: 15 percentage points</li>
+                        <li>Gold boost cap: 3pp</li>
+                        <li>FX boost cap: 3pp</li>
+                    </ul>
+                </div>
+
+                <h4>2.3 Rebalancing & Smoothing</h4>
+                <ul>
+                    <li><strong>Rebalancing Frequency:</strong> Quarterly</li>
+                    <li><strong>Smoothing Window:</strong> 3-month moving average</li>
+                    <li><strong>Covariance Estimation:</strong> 20% shrinkage (Ledoit-Wolf style)</li>
+                </ul>
+            </div>
+
+            <button class="collapsible">3. Integrated Risk Management (4 Layers)</button>
+            <div class="collapsible-content">
+                <p>Multi-layer risk control system applied sequentially to final allocations:</p>
+
+                <h4>Layer 1: Volatility Targeting</h4>
+                <ul>
+                    <li><strong>Target:</strong> 3% annualized volatility</li>
+                    <li><strong>Buffer:</strong> 20% tolerance (trigger at 3.6%)</li>
+                    <li><strong>Action:</strong> If realized vol &gt; 3.6%, shift allocation toward cash/short-term treasuries</li>
+                </ul>
+
+                <h4>Layer 2: Drawdown Defense</h4>
+                <ul>
+                    <li><strong>Trigger:</strong> -5% drawdown threshold</li>
+                    <li><strong>Action:</strong> Increase cash by up to 15%, proportionally reduce risky assets</li>
+                    <li><strong>Recovery:</strong> Gradual reversion as drawdown improves</li>
+                </ul>
+
+                <h4>Layer 3: Tail Hedging</h4>
+                <ul>
+                    <li><strong>Trigger:</strong> VIX &gt; 30 OR combined score in top 10%</li>
+                    <li><strong>Action:</strong> Allocate to crisis hedges (Gold, safe-haven currencies CHF/JPY)</li>
+                    <li><strong>Magnitude:</strong> Scaled by severity of signal</li>
+                </ul>
+
+                <h4>Layer 4: Drawdown Budget</h4>
+                <ul>
+                    <li><strong>Monitor:</strong> Cumulative drawdown over rolling periods</li>
+                    <li><strong>Action:</strong> Reduce risk exposure proportionally to drawdown depth</li>
+                    <li><strong>Purpose:</strong> Prevent cascade losses during prolonged downturns</li>
+                </ul>
+            </div>
+
+            <button class="collapsible">4. Asset Universe & Mapping</button>
+            <div class="collapsible-content">
+                <h4>16 Individual Assets → 8 Asset Classes</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Class</th>
+                            <th>Individual Assets</th>
+                            <th>Strategic Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Cash/Short</strong></td>
+                            <td>US 1M T-Bill, US 6M T-Bill, Short-term treasury index, US Treasury 1-3Y</td>
+                            <td>Liquidity, capital preservation, defensive anchor</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Government Long</strong></td>
+                            <td>US Treasury 10+ Years, US Treasury 20+ Years, US Aggregate 10+</td>
+                            <td>Duration exposure, flight-to-quality</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Investment Grade</strong></td>
+                            <td>US Corporate IG, US Aggregate</td>
+                            <td>Core fixed income, yield enhancement</td>
+                        </tr>
+                        <tr>
+                            <td><strong>High Yield</strong></td>
+                            <td>US Corporate HY</td>
+                            <td>Enhanced returns, credit risk premium</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TIPS Short</strong></td>
+                            <td>US TIPS 0-5 Years, US TIPS 1-5 Years</td>
+                            <td>Short-term inflation protection, low duration</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TIPS Long</strong></td>
+                            <td>US Treasury Inflation Notes 1-10 Years</td>
+                            <td>Long-term inflation protection</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gold</strong></td>
+                            <td>Gold Index</td>
+                            <td>Crisis hedge, store of value, portfolio diversifier</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FX/Currency</strong></td>
+                            <td>CHF (Swiss Franc), JPY (Japanese Yen)</td>
+                            <td>Safe-haven currencies, crisis hedge</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Data Quality & Coverage</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Type</th>
+                            <th>Coverage</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Core Fixed Income</td>
+                            <td class="number">~100%</td>
+                            <td>Full historical data from 1969</td>
+                        </tr>
+                        <tr>
+                            <td>TIPS</td>
+                            <td class="number">59-64%</td>
+                            <td>394-421 months (introduced mid-1990s)</td>
+                        </tr>
+                        <tr>
+                            <td>Gold</td>
+                            <td class="number">43.6%</td>
+                            <td>288 months</td>
+                        </tr>
+                        <tr>
+                            <td>Safe Haven FX</td>
+                            <td class="number">2.1%</td>
+                            <td>14 months (limited tactical use)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Regime Analysis -->
+        <section id="regime-analysis">
+            <h2>Regime Analysis</h2>
+
+            <h3>Regime Classification Visualization</h3>
+            <div class="image-container">
+                <img src="Outputs/regime_classification_visualization.png" alt="Regime Classification Framework">
+                <p class="image-caption">Figure 1: Three-panel regime classification framework showing (A) Combined regime score with percentile thresholds, (B) Primary vs Secondary score components with dynamic weights, (C) Color-coded regime timeline from 1985-2024</p>
+            </div>
+
+            <h3>Regime Distribution & Statistics</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Regime</th>
+                        <th>Frequency</th>
+                        <th>Months</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Crisis</strong></td>
+                        <td class="number">20.9%</td>
+                        <td class="number">208</td>
+                        <td>Periods of extreme policy uncertainty, market stress, and elevated volatility (e.g., GFC, COVID-19)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk-Off</strong></td>
+                        <td class="number">19.8%</td>
+                        <td class="number">197</td>
+                        <td>Elevated uncertainty requiring defensive positioning but not crisis-level stress</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Neutral</strong></td>
+                        <td class="number">18.8%</td>
+                        <td class="number">187</td>
+                        <td>Moderate environment with balanced risk conditions</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk-On</strong></td>
+                        <td class="number">40.6%</td>
+                        <td class="number">404</td>
+                        <td>Low uncertainty, stable policy environment, growth-supportive conditions</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Regime Validation Results</h3>
+            <p>Statistical validation confirms that the regime classification effectively distinguishes between market environments:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Regime</th>
+                        <th>Test Type</th>
+                        <th>Safe Assets Mean Sharpe</th>
+                        <th>Risky Assets Mean Sharpe</th>
+                        <th>Validation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Crisis</strong></td>
+                        <td>Safe vs Risky</td>
+                        <td class="number positive">2.49</td>
+                        <td class="number negative">-0.08</td>
+                        <td class="positive">✓ Safe outperforms</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk-Off</strong></td>
+                        <td>Safe vs Risky</td>
+                        <td class="number">1.31</td>
+                        <td class="number">1.86</td>
+                        <td>Mixed (defensive bias appropriate)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Neutral</strong></td>
+                        <td>Safe vs Risky</td>
+                        <td class="number">0.84</td>
+                        <td class="number">1.00</td>
+                        <td>Balanced performance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk-On</strong></td>
+                        <td>Safe vs Risky</td>
+                        <td class="number">1.64</td>
+                        <td class="number positive">2.00</td>
+                        <td class="positive">✓ Risky outperforms</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box success">
+                <h4>Key Validation Insight</h4>
+                <p>During Crisis regimes, safe assets deliver a Sharpe of 2.49 while risky assets are negative (-0.08), validating the regime classification's ability to identify periods requiring defensive positioning.</p>
+            </div>
+
+            <h3>Average Allocation by Regime</h3>
+            <div class="image-container">
+                <img src="Outputs/avg_allocation_by_regime.png" alt="Average Allocation by Asset Class & Regime">
+                <p class="image-caption">Figure 2: Average allocation by asset class across four regimes, showing clear defensive shifts in Crisis (high cash/government) vs offensive positioning in Risk-On (high IG/HY)</p>
+            </div>
+
+            <h3>Regime-Specific Allocation Summary</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Asset Class</th>
+                        <th>Crisis</th>
+                        <th>Risk-Off</th>
+                        <th>Neutral</th>
+                        <th>Risk-On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Cash/Short</strong></td>
+                        <td class="number highlight">41.3%</td>
+                        <td class="number">33.4%</td>
+                        <td class="number">18.3%</td>
+                        <td class="number">10.9%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Government Long</strong></td>
+                        <td class="number">25.0%</td>
+                        <td class="number">28.9%</td>
+                        <td class="number">26.5%</td>
+                        <td class="number">18.4%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Investment Grade</strong></td>
+                        <td class="number">18.1%</td>
+                        <td class="number">26.0%</td>
+                        <td class="number">38.1%</td>
+                        <td class="number highlight">42.4%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>High Yield</strong></td>
+                        <td class="number">1.1%</td>
+                        <td class="number">3.9%</td>
+                        <td class="number">11.6%</td>
+                        <td class="number highlight">23.3%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TIPS Short</strong></td>
+                        <td class="number">2.0%</td>
+                        <td class="number">0.6%</td>
+                        <td class="number">0.2%</td>
+                        <td class="number">0.04%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TIPS Long</strong></td>
+                        <td class="number">3.2%</td>
+                        <td class="number">0.9%</td>
+                        <td class="number">0.1%</td>
+                        <td class="number">0.02%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gold</strong></td>
+                        <td class="number highlight">4.5%</td>
+                        <td class="number">2.8%</td>
+                        <td class="number">1.7%</td>
+                        <td class="number">1.5%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>FX/Currency</strong></td>
+                        <td class="number highlight">4.8%</td>
+                        <td class="number">3.6%</td>
+                        <td class="number">3.4%</td>
+                        <td class="number">3.4%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box">
+                <h4>Allocation Pattern Analysis</h4>
+                <ul>
+                    <li><strong>Crisis:</strong> Maximum defensive positioning with 41% in cash/short, elevated gold (4.5%) and FX hedges (4.8%)</li>
+                    <li><strong>Risk-On:</strong> Offensive tilt with 42% in Investment Grade and 23% in High Yield, minimal cash (11%)</li>
+                    <li><strong>TIPS Usage:</strong> Concentrated in Crisis regime for inflation protection, minimal in other regimes</li>
+                </ul>
+            </div>
+
+            <h3>Strategy Performance by Regime</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Regime</th>
+                        <th>Ann. Return</th>
+                        <th>Volatility</th>
+                        <th>Sharpe Ratio</th>
+                        <th>Max Drawdown</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Crisis</strong></td>
+                        <td class="number positive">7.98%</td>
+                        <td class="number">3.44%</td>
+                        <td class="number positive highlight">2.32</td>
+                        <td class="number">-3.59%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk-Off</strong></td>
+                        <td class="number">5.58%</td>
+                        <td class="number">2.96%</td>
+                        <td class="number">1.88</td>
+                        <td class="number">-3.55%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Neutral</strong></td>
+                        <td class="number">3.09%</td>
+                        <td class="number">3.39%</td>
+                        <td class="number">0.91</td>
+                        <td class="number">-7.83%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk-On</strong></td>
+                        <td class="number positive">6.35%</td>
+                        <td class="number">2.85%</td>
+                        <td class="number positive">2.23</td>
+                        <td class="number">-3.94%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box success">
+                <h4>Best Performance in Crisis Regime</h4>
+                <p>The strategy achieves its highest Sharpe ratio (2.32) during Crisis periods, validating the defensive positioning and crisis hedge allocations. This demonstrates exceptional capital preservation during market stress.</p>
+            </div>
+        </section>
+
+        <!-- Asset Analysis -->
+        <section id="asset-analysis">
+            <h2>Asset Analysis</h2>
+
+            <h3>Asset Correlation Matrix</h3>
+            <div class="image-container">
+                <img src="Outputs/correlation_matrix.png" alt="Asset Correlation Matrix">
+                <p class="image-caption">Figure 3: Full-period correlation matrix across 16 assets showing diversification opportunities (green indicates positive correlation, red indicates negative correlation)</p>
+            </div>
+
+            <h3>Key Correlation Insights</h3>
+            <ul>
+                <li><strong>High Positive Correlations (&gt;0.9):</strong>
+                    <ul>
+                        <li>US Aggregate vs US Corporate IG: 0.99 (overlapping holdings)</li>
+                        <li>Long-duration Treasuries (10+, 20+): 0.99-1.00 (similar rate sensitivity)</li>
+                        <li>TIPS short-duration instruments: 0.95-1.00</li>
+                    </ul>
+                </li>
+                <li><strong>Diversification Benefits (Low/Negative Correlations):</strong>
+                    <ul>
+                        <li>Gold vs High Yield: -0.14 (crisis hedge properties)</li>
+                        <li>CHF vs IG Spreads: -0.28 (safe haven vs credit risk)</li>
+                        <li>JPY vs Long Treasuries: -0.24 (currency diversification)</li>
+                        <li>Short-term Treasuries vs HY: -0.03 (duration/credit diversification)</li>
+                    </ul>
+                </li>
+                <li><strong>Flight-to-Quality Pairs:</strong>
+                    <ul>
+                        <li>Long Treasuries highly correlated (0.93-0.99) with other government bonds</li>
+                        <li>Safe-haven currencies (CHF, JPY) show 0.93 correlation with each other</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="info-box">
+                <h4>Portfolio Construction Implication</h4>
+                <p>The correlation structure validates the strategy's use of Gold, safe-haven FX, and short-term Treasuries as effective diversifiers during crisis periods when traditional credit assets underperform.</p>
+            </div>
+        </section>
+
+        <!-- Performance -->
+        <section id="performance">
+            <h2>Performance Results</h2>
+
+            <h3>Strategy Comparison Overview</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Rule-Based Strategy (Primary)</h4>
+                    <ul>
+                        <li><strong>Ann. Return:</strong> 5.89%</li>
+                        <li><strong>Ann. Volatility:</strong> 3.11%</li>
+                        <li><strong>Sharpe Ratio:</strong> <span class="highlight positive">1.89</span></li>
+                        <li><strong>Max Drawdown:</strong> -10.1%</li>
+                        <li><strong>Win Rate:</strong> 73.2%</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>SAA Benchmark</h4>
+                    <ul>
+                        <li><strong>Ann. Return:</strong> 5.18%</li>
+                        <li><strong>Ann. Volatility:</strong> 4.85%</li>
+                        <li><strong>Sharpe Ratio:</strong> 1.07</li>
+                        <li><strong>Max Drawdown:</strong> -16.2%</li>
+                        <li><strong>Win Rate:</strong> 66.3%</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Comprehensive Performance Metrics</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Rule-Based</th>
+                        <th>SAA Benchmark</th>
+                        <th>Improvement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Ann. Return</strong></td>
+                        <td class="number">5.89%</td>
+                        <td class="number">5.18%</td>
+                        <td class="number positive">+13.6%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ann. Volatility</strong></td>
+                        <td class="number">3.11%</td>
+                        <td class="number">4.85%</td>
+                        <td class="number positive">-35.9%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sharpe Ratio</strong></td>
+                        <td class="number highlight">1.89</td>
+                        <td class="number">1.07</td>
+                        <td class="number positive highlight">+77.2%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sortino Ratio</strong></td>
+                        <td class="number">3.08</td>
+                        <td class="number">1.64</td>
+                        <td class="number positive">+87.8%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Calmar Ratio</strong></td>
+                        <td class="number">0.58</td>
+                        <td class="number">0.32</td>
+                        <td class="number positive">+82.0%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Max Drawdown</strong></td>
+                        <td class="number">-10.10%</td>
+                        <td class="number">-16.23%</td>
+                        <td class="number positive">+37.8%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Avg Drawdown</strong></td>
+                        <td class="number">-1.55%</td>
+                        <td class="number">-2.58%</td>
+                        <td class="number positive">+39.9%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Max DD Duration</strong></td>
+                        <td class="number">44 months</td>
+                        <td class="number">37 months</td>
+                        <td class="number negative">-18.9%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>VaR 95%</strong></td>
+                        <td class="number">-1.06%</td>
+                        <td class="number">-1.80%</td>
+                        <td class="number positive">+41.0%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CVaR 95%</strong></td>
+                        <td class="number">-1.53%</td>
+                        <td class="number">-2.69%</td>
+                        <td class="number positive">+43.1%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>VaR 99%</strong></td>
+                        <td class="number">-1.78%</td>
+                        <td class="number">-2.93%</td>
+                        <td class="number positive">+39.2%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CVaR 99%</strong></td>
+                        <td class="number">-2.15%</td>
+                        <td class="number">-4.08%</td>
+                        <td class="number positive">+47.3%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Win Rate (Monthly)</strong></td>
+                        <td class="number">73.2%</td>
+                        <td class="number">66.3%</td>
+                        <td class="number positive">+10.4%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>12M Loss Probability</strong></td>
+                        <td class="number">7.1%</td>
+                        <td class="number">13.2%</td>
+                        <td class="number positive">-46.4%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box success">
+                <h4>Outstanding Risk-Adjusted Performance</h4>
+                <p>The Rule-Based strategy demonstrates exceptional performance across all metrics:</p>
+                <ul>
+                    <li><strong>77% improvement in Sharpe ratio</strong> - delivering significantly better risk-adjusted returns</li>
+                    <li><strong>38% shallower maximum drawdown</strong> - superior capital preservation</li>
+                    <li><strong>43-47% improvement in tail risk metrics</strong> (CVaR) - better downside protection</li>
+                    <li><strong>46% lower probability of 12-month losses</strong> - more consistent performance</li>
+                </ul>
+            </div>
+
+            <h3>Benchmark Strategy Comparison</h3>
+            <p>For reference, the model also tested three quantitative allocation strategies. Note that these are analytical references, not primary comparisons:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Average Allocation Pattern</th>
+                        <th>Sharpe</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>SAA (Primary Benchmark)</strong></td>
+                        <td>Static 30% IG, 30% Gov Long, 20% TIPS, 10% Cash, 10% HY</td>
+                        <td class="number">1.07</td>
+                        <td>Realistic static allocation baseline</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mean-Variance</strong></td>
+                        <td>Max Sharpe optimization</td>
+                        <td class="number">4.87</td>
+                        <td>Unrealistic (overfitting), reference only</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk Parity</strong></td>
+                        <td>Equal risk contribution</td>
+                        <td class="number">1.75</td>
+                        <td>Alternative quantitative approach</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sharpe-Weighted</strong></td>
+                        <td>Weight proportional to Sharpe</td>
+                        <td class="number">1.80</td>
+                        <td>Alternative quantitative approach</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box warning">
+                <h4>Note on Quantitative Strategies</h4>
+                <p>The Mean-Variance strategy shows an unrealistically high Sharpe (4.87) due to in-sample overfitting and perfect foresight. It serves only as a parameter guidance tool, not a realistic benchmark. The SAA benchmark is the primary comparison point.</p>
+            </div>
+        </section>
+
+        <!-- Crisis Analysis -->
+        <section id="crisis">
+            <h2>Crisis Period Analysis</h2>
+
+            <p>The strategy was tested across six distinct historical periods representing different market regimes and stress scenarios:</p>
+
+            <h3>Crisis Periods Overview</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>Dates</th>
+                        <th>Duration</th>
+                        <th>Key Characteristics</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Dotcom Bust</strong></td>
+                        <td>Jan 2000 - Dec 2002</td>
+                        <td>36 months</td>
+                        <td>Tech bubble collapse, equity bear market, recession</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GFC (Global Financial Crisis)</strong></td>
+                        <td>Jul 2007 - Dec 2009</td>
+                        <td>30 months</td>
+                        <td>Credit market collapse, severe recession, systemic crisis</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Calm Period</strong></td>
+                        <td>Jan 2017 - Dec 2019</td>
+                        <td>36 months</td>
+                        <td>Low volatility, stable growth, risk-on baseline</td>
+                    </tr>
+                    <tr>
+                        <td><strong>COVID-19 Pandemic</strong></td>
+                        <td>Jan 2020 - Dec 2020</td>
+                        <td>12 months</td>
+                        <td>Pandemic shock, extreme volatility, V-shaped recovery</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Inflation Surge</strong></td>
+                        <td>Jul 2021 - Dec 2022</td>
+                        <td>18 months</td>
+                        <td>Simultaneous bond/equity selloff, rate hiking cycle</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2024 Volatility</strong></td>
+                        <td>Jan 2024 - Dec 2024</td>
+                        <td>12 months</td>
+                        <td>Recent market conditions, policy uncertainty</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Crisis Performance Summary - All Periods</h3>
+            <p>The table below shows performance across all crisis periods. The "Preservation Score" is a composite metric (lower is better) combining Max Drawdown (40%), VaR (35%), and Probability of Loss (25%).</p>
+
+            <div class="tabs">
+                <button class="tab-button active" onclick="switchTab(event, 'summary-all')">All Periods Summary</button>
+                <button class="tab-button" onclick="switchTab(event, 'dotcom')">Dotcom Bust</button>
+                <button class="tab-button" onclick="switchTab(event, 'gfc')">GFC</button>
+                <button class="tab-button" onclick="switchTab(event, 'calm')">Calm 2017-2019</button>
+                <button class="tab-button" onclick="switchTab(event, 'covid')">COVID-19</button>
+                <button class="tab-button" onclick="switchTab(event, 'inflation')">Inflation 2022</button>
+                <button class="tab-button" onclick="switchTab(event, 'vol2024')">2024 Volatility</button>
+            </div>
+
+            <div id="summary-all" class="tab-content active">
+                <h4>Consolidated Crisis Performance</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Strategy</th>
+                            <th>Cum. Return</th>
+                            <th>Ann. Return</th>
+                            <th>Sharpe</th>
+                            <th>Max DD</th>
+                            <th>VaR 95%</th>
+                            <th>Preservation Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2"><strong>Dotcom</strong></td>
+                            <td>Rule-Based</td>
+                            <td class="number">25.8%</td>
+                            <td class="number">7.7%</td>
+                            <td class="number highlight">2.92</td>
+                            <td class="number">-1.7%</td>
+                            <td class="number">-0.59%</td>
+                            <td class="number positive">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>SAA</td>
+                            <td class="number">26.5%</td>
+                            <td class="number">7.9%</td>
+                            <td class="number">2.22</td>
+                            <td class="number">-2.1%</td>
+                            <td class="number">-1.19%</td>
+                            <td class="number">0.15</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>GFC</strong></td>
+                            <td>Rule-Based</td>
+                            <td class="number">14.7%</td>
+                            <td class="number">5.5%</td>
+                            <td class="number highlight">1.67</td>
+                            <td class="number positive">-3.5%</td>
+                            <td class="number">-1.32%</td>
+                            <td class="number positive">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>SAA</td>
+                            <td class="number">17.9%</td>
+                            <td class="number">6.8%</td>
+                            <td class="number">1.09</td>
+                            <td class="number negative">-7.6%</td>
+                            <td class="number">-2.12%</td>
+                            <td class="number">0.71</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>Calm</strong></td>
+                            <td>Rule-Based</td>
+                            <td class="number">14.6%</td>
+                            <td class="number">4.6%</td>
+                            <td class="number">1.61</td>
+                            <td class="number">-2.0%</td>
+                            <td class="number">-0.80%</td>
+                            <td class="number positive">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>SAA</td>
+                            <td class="number">14.8%</td>
+                            <td class="number">4.7%</td>
+                            <td class="number">1.35</td>
+                            <td class="number">-2.9%</td>
+                            <td class="number">-1.10%</td>
+                            <td class="number">0.20</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>COVID</strong></td>
+                            <td>Rule-Based</td>
+                            <td class="number">7.6%</td>
+                            <td class="number">7.3%</td>
+                            <td class="number highlight">3.00</td>
+                            <td class="number">-0.7%</td>
+                            <td class="number">-0.41%</td>
+                            <td class="number positive">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>SAA</td>
+                            <td class="number">9.5%</td>
+                            <td class="number">9.3%</td>
+                            <td class="number">1.90</td>
+                            <td class="number">-1.7%</td>
+                            <td class="number">-1.11%</td>
+                            <td class="number">0.15</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>Inflation 2022</strong></td>
+                            <td>Rule-Based</td>
+                            <td class="number negative">-7.4%</td>
+                            <td class="number negative">-5.0%</td>
+                            <td class="number negative">-1.56</td>
+                            <td class="number negative">-9.4%</td>
+                            <td class="number">-1.77%</td>
+                            <td class="number positive">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>SAA</td>
+                            <td class="number negative">-12.6%</td>
+                            <td class="number negative">-8.7%</td>
+                            <td class="number negative">-1.20</td>
+                            <td class="number negative">-16.2%</td>
+                            <td class="number">-4.03%</td>
+                            <td class="number">0.29</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="2"><strong>2024</strong></td>
+                            <td>Rule-Based</td>
+                            <td class="number">4.7%</td>
+                            <td class="number">4.6%</td>
+                            <td class="number highlight">2.08</td>
+                            <td class="number">-0.6%</td>
+                            <td class="number">-0.52%</td>
+                            <td class="number positive">0.00</td>
+                        </tr>
+                        <tr>
+                            <td>SAA</td>
+                            <td class="number">1.8%</td>
+                            <td class="number">1.9%</td>
+                            <td class="number">0.34</td>
+                            <td class="number">-2.9%</td>
+                            <td class="number">-2.13%</td>
+                            <td class="number">0.15</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box success">
+                    <h4>Key Findings</h4>
+                    <ul>
+                        <li><strong>Perfect Preservation Score:</strong> Rule-Based achieves best-in-class preservation score (0.00) across ALL six periods</li>
+                        <li><strong>GFC Performance:</strong> Limited drawdown to -3.5% vs SAA's -7.6% during the worst financial crisis</li>
+                        <li><strong>COVID Resilience:</strong> Delivered exceptional Sharpe of 3.00 with minimal drawdown (-0.7%)</li>
+                        <li><strong>Inflation Hedge:</strong> Even during the challenging 2022 inflation surge, drawdown was -9.4% vs SAA's -16.2%</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="dotcom" class="tab-content">
+                <h4>Dotcom Bust (Jan 2000 - Dec 2002)</h4>
+                <p><strong>Context:</strong> Technology bubble burst, NASDAQ declined 78%, recession from March-November 2001</p>
+
+                <h5>Performance Summary</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Rule-Based</th>
+                            <th>SAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cumulative Return</td><td class="number">25.8%</td><td class="number">26.5%</td></tr>
+                        <tr><td>Annualized Return</td><td class="number">7.7%</td><td class="number">7.9%</td></tr>
+                        <tr><td>Sharpe Ratio</td><td class="number highlight">2.92</td><td class="number">2.22</td></tr>
+                        <tr><td>Max Drawdown</td><td class="number positive">-1.7%</td><td class="number">-2.1%</td></tr>
+                        <tr><td>VaR 95%</td><td class="number">-0.59%</td><td class="number">-1.19%</td></tr>
+                    </tbody>
+                </table>
+
+                <h5>Average Allocations (Asset Class)</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Class</th>
+                            <th>Rule-Based</th>
+                            <th>SAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cash/Short</td><td class="number">27.7%</td><td class="number">9.6%</td></tr>
+                        <tr><td>Government Long</td><td class="number">28.5%</td><td class="number">28.8%</td></tr>
+                        <tr><td>Investment Grade</td><td class="number">23.2%</td><td class="number">28.8%</td></tr>
+                        <tr><td>High Yield</td><td class="number">4.0%</td><td class="number">9.6%</td></tr>
+                        <tr><td>TIPS (Combined)</td><td class="number">7.6%</td><td class="number">19.2%</td></tr>
+                        <tr><td>Gold</td><td class="number">5.7%</td><td class="number">1.9%</td></tr>
+                        <tr><td>FX/Currency</td><td class="number">3.4%</td><td class="number">1.9%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="gfc" class="tab-content">
+                <h4>Global Financial Crisis (Jul 2007 - Dec 2009)</h4>
+                <p><strong>Context:</strong> Subprime mortgage crisis, Lehman bankruptcy, severe credit market dislocation, Great Recession</p>
+
+                <h5>Performance Summary</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Rule-Based</th>
+                            <th>SAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cumulative Return</td><td class="number">14.7%</td><td class="number">17.9%</td></tr>
+                        <tr><td>Annualized Return</td><td class="number">5.5%</td><td class="number">6.8%</td></tr>
+                        <tr><td>Sharpe Ratio</td><td class="number highlight">1.67</td><td class="number">1.09</td></tr>
+                        <tr><td>Max Drawdown</td><td class="number positive highlight">-3.5%</td><td class="number negative">-7.6%</td></tr>
+                        <tr><td>VaR 95%</td><td class="number">-1.32%</td><td class="number">-2.12%</td></tr>
+                        <tr><td>Prob. 12M Loss</td><td class="number">0.0%</td><td class="number">15.8%</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box success">
+                    <h4>Showcase Performance</h4>
+                    <p>During the worst financial crisis in modern history, the Rule-Based strategy limited drawdown to just -3.5% while SAA experienced -7.6%, demonstrating exceptional capital preservation when it matters most.</p>
+                </div>
+
+                <h5>Average Allocations (Asset Class)</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Class</th>
+                            <th>Rule-Based</th>
+                            <th>SAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cash/Short</td><td class="number highlight">27.7%</td><td class="number">9.6%</td></tr>
+                        <tr><td>Government Long</td><td class="number">28.5%</td><td class="number">28.8%</td></tr>
+                        <tr><td>Investment Grade</td><td class="number">23.2%</td><td class="number">28.8%</td></tr>
+                        <tr><td>High Yield</td><td class="number">4.0%</td><td class="number">9.6%</td></tr>
+                        <tr><td>TIPS (Combined)</td><td class="number">7.6%</td><td class="number">19.2%</td></tr>
+                        <tr><td>Gold</td><td class="number highlight">5.7%</td><td class="number">1.9%</td></tr>
+                        <tr><td>FX/Currency</td><td class="number">3.4%</td><td class="number">1.9%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="calm" class="tab-content">
+                <h4>Calm Period (Jan 2017 - Dec 2019)</h4>
+                <p><strong>Context:</strong> Low volatility, stable economic growth, "Goldilocks" environment - serves as risk-on baseline</p>
+
+                <h5>Performance Summary</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Rule-Based</th>
+                            <th>SAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cumulative Return</td><td class="number">14.6%</td><td class="number">14.8%</td></tr>
+                        <tr><td>Annualized Return</td><td class="number">4.6%</td><td class="number">4.7%</td></tr>
+                        <tr><td>Sharpe Ratio</td><td class="number">1.61</td><td class="number">1.35</td></tr>
+                        <tr><td>Max Drawdown</td><td class="number">-2.0%</td><td class="number">-2.9%</td></tr>
+                        <tr><td>VaR 95%</td><td class="number">-0.80%</td><td class="number">-1.10%</td></tr>
+                    </tbody>
+                </table>
+
+                <h5>Average Allocations (Asset Class)</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Class</th>
+                            <th>Rule-Based</th>
+                            <th>SAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cash/Short</td><td class="number">27.7%</td><td class="number">9.6%</td></tr>
+                        <tr><td>Government Long</td><td class="number">28.5%</td><td class="number">28.8%</td></tr>
+                        <tr><td>Investment Grade</td><td class="number">23.2%</td><td class="number">28.8%</td></tr>
+                        <tr><td>High Yield</td><td class="number">4.0%</td><td class="number">9.6%</td></tr>
+                        <tr><td>TIPS (Combined)</td><td class="number">7.6%</td><td class="number">19.2%</td></tr>
+                        <tr><td>Gold</td><td class="number">5.7%</td><td class="number">1.9%</td></tr>
+                        <tr><td>FX/Currency</td><td class="number">3.4%</td><td class="number">1.9%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="covid" class="tab-content">
+                <h4>COVID-19 Pandemic (Jan 2020 - Dec 2020)</h4>
+                <p><strong>Context:</strong> Global pandemic shock, extreme volatility spike (VIX to 82), unprecedented fiscal/monetary response, V-shaped recovery</p>
+
+                <h5>Performance Summary</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Rule-Based</th>
+                            <th>SAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cumulative Return</td><td class="number">7.6%</td><td class="number">9.5%</td></tr>
+                        <tr><td>Annualized Return</td><td class="number">7.3%</td><td class="number">9.3%</td></tr>
+                        <tr><td>Sharpe Ratio</td><td class="number highlight">3.00</td><td class="number">1.90</td></tr>
+                        <tr><td>Max Drawdown</td><td class="number positive highlight">-0.7%</td><td class="number">-1.7%</td></tr>
+                        <tr><td>VaR 95%</td><td class="number">-0.41%</td><td class="number">-1.11%</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box success">
+                    <h4>Exceptional Crisis Performance</h4>
+                    <p>Achieved the highest Sharpe ratio (3.00) across all periods with minimal drawdown (-0.7%), demonstrating the strategy's effectiveness during extreme volatility shocks.</p>
+                </div>
+
+                <h5>Average Allocations (Asset Class)</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Class</th>
+                            <th>Rule-Based</th>
+                            <th>SAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cash/Short</td><td class="number">27.7%</td><td class="number">9.6%</td></tr>
+                        <tr><td>Government Long</td><td class="number">28.5%</td><td class="number">28.8%</td></tr>
+                        <tr><td>Investment Grade</td><td class="number">23.2%</td><td class="number">28.8%</td></tr>
+                        <tr><td>High Yield</td><td class="number">4.0%</td><td class="number">9.6%</td></tr>
+                        <tr><td>TIPS (Combined)</td><td class="number">7.6%</td><td class="number">19.2%</td></tr>
+                        <tr><td>Gold</td><td class="number">5.7%</td><td class="number">1.9%</td></tr>
+                        <tr><td>FX/Currency</td><td class="number">3.4%</td><td class="number">1.9%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="inflation" class="tab-content">
+                <h4>Inflation Surge (Jul 2021 - Dec 2022)</h4>
+                <p><strong>Context:</strong> Post-pandemic inflation spike to 9.1%, aggressive Fed hiking (75bp increments), simultaneous bond/equity selloff</p>
+
+                <h5>Performance Summary</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Rule-Based</th>
+                            <th>SAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cumulative Return</td><td class="number negative">-7.4%</td><td class="number negative">-12.6%</td></tr>
+                        <tr><td>Annualized Return</td><td class="number negative">-5.0%</td><td class="number negative">-8.7%</td></tr>
+                        <tr><td>Sharpe Ratio</td><td class="number negative">-1.56</td><td class="number negative">-1.20</td></tr>
+                        <tr><td>Max Drawdown</td><td class="number negative">-9.4%</td><td class="number negative highlight">-16.2%</td></tr>
+                        <tr><td>VaR 95%</td><td class="number">-1.77%</td><td class="number">-4.03%</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box">
+                    <h4>Challenging Environment</h4>
+                    <p>The 2022 inflation surge was exceptionally difficult for fixed-income portfolios (both bonds and stocks declined). However, the Rule-Based strategy still significantly outperformed on capital preservation: -9.4% max DD vs -16.2% for SAA.</p>
+                </div>
+
+                <h5>Average Allocations (Asset Class)</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Class</th>
+                            <th>Rule-Based</th>
+                            <th>SAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cash/Short</td><td class="number">27.7%</td><td class="number">9.6%</td></tr>
+                        <tr><td>Government Long</td><td class="number">28.5%</td><td class="number">28.8%</td></tr>
+                        <tr><td>Investment Grade</td><td class="number">23.2%</td><td class="number">28.8%</td></tr>
+                        <tr><td>High Yield</td><td class="number">4.0%</td><td class="number">9.6%</td></tr>
+                        <tr><td>TIPS (Combined)</td><td class="number">7.6%</td><td class="number">19.2%</td></tr>
+                        <tr><td>Gold</td><td class="number">5.7%</td><td class="number">1.9%</td></tr>
+                        <tr><td>FX/Currency</td><td class="number">3.4%</td><td class="number">1.9%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="vol2024" class="tab-content">
+                <h4>2024 Volatility (Jan 2024 - Dec 2024)</h4>
+                <p><strong>Context:</strong> Recent market conditions with policy uncertainty, election year volatility, geopolitical tensions</p>
+
+                <h5>Performance Summary</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Rule-Based</th>
+                            <th>SAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cumulative Return</td><td class="number">4.7%</td><td class="number">1.8%</td></tr>
+                        <tr><td>Annualized Return</td><td class="number">4.6%</td><td class="number">1.9%</td></tr>
+                        <tr><td>Sharpe Ratio</td><td class="number highlight">2.08</td><td class="number">0.34</td></tr>
+                        <tr><td>Max Drawdown</td><td class="number positive">-0.6%</td><td class="number">-2.9%</td></tr>
+                        <tr><td>VaR 95%</td><td class="number">-0.52%</td><td class="number">-2.13%</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box success">
+                    <h4>Recent Validation</h4>
+                    <p>Strong recent performance with 2.08 Sharpe and minimal drawdown demonstrates the strategy's continued effectiveness in current market conditions.</p>
+                </div>
+
+                <h5>Average Allocations (Asset Class)</h5>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset Class</th>
+                            <th>Rule-Based</th>
+                            <th>SAA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Cash/Short</td><td class="number">27.7%</td><td class="number">9.6%</td></tr>
+                        <tr><td>Government Long</td><td class="number">28.5%</td><td class="number">28.8%</td></tr>
+                        <tr><td>Investment Grade</td><td class="number">23.2%</td><td class="number">28.8%</td></tr>
+                        <tr><td>High Yield</td><td class="number">4.0%</td><td class="number">9.6%</td></tr>
+                        <tr><td>TIPS (Combined)</td><td class="number">7.6%</td><td class="number">19.2%</td></tr>
+                        <tr><td>Gold</td><td class="number">5.7%</td><td class="number">1.9%</td></tr>
+                        <tr><td>FX/Currency</td><td class="number">3.4%</td><td class="number">1.9%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Detailed Tables -->
+        <section id="tables">
+            <h2>Detailed Data Tables</h2>
+
+            <button class="collapsible">Strategic Asset Allocation (SAA) Benchmark Weights</button>
+            <div class="collapsible-content">
+                <h4>SAA Benchmark Snapshot - Individual Asset Weights</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Asset</th>
+                            <th>SAA Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Short-term treasury index</td><td class="number">4.81%</td></tr>
+                        <tr><td>US treasury 1-3 Year</td><td class="number">4.81%</td></tr>
+                        <tr><td>US TIPS 0-5 Years</td><td class="number">4.81%</td></tr>
+                        <tr><td>US TIPS 1-5 years</td><td class="number">4.81%</td></tr>
+                        <tr><td>US Treasury Inflation Notes 1-10 Years</td><td class="number">9.62%</td></tr>
+                        <tr><td>US Treasury 10+ Years</td><td class="number">7.21%</td></tr>
+                        <tr><td>US Treasury 20+ Years</td><td class="number">7.21%</td></tr>
+                        <tr><td>US Aggregate 10 or 10+ Years</td><td class="number">7.21%</td></tr>
+                        <tr><td>US Aggregate</td><td class="number">14.42%</td></tr>
+                        <tr><td>US Corporate IG</td><td class="number">14.42%</td></tr>
+                        <tr><td>US Corporate HY</td><td class="number">9.62%</td></tr>
+                        <tr><td>Gold</td><td class="number">1.92%</td></tr>
+                        <tr><td>CHF</td><td class="number">0.96%</td></tr>
+                        <tr><td>JPY</td><td class="number">0.96%</td></tr>
+                    </tbody>
+                </table>
+
+                <h4>Other Reference Benchmark Weights</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Strategy</th>
+                            <th>Description</th>
+                            <th>Key Characteristics</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Barbell Long-Short</strong></td>
+                            <td>50% Cash/Short, 50% Gov Long</td>
+                            <td>Pure duration barbell, minimal credit risk</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Barbell Diversified</strong></td>
+                            <td>40% Cash/Short, 40% Gov Long, 20% diversifiers</td>
+                            <td>Balanced barbell with IG/Aggregate exposure</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Capital Preservation</strong></td>
+                            <td>Heavy IG/Gov mix, minimal HY</td>
+                            <td>Conservative institutional mandate</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gov Long Only</strong></td>
+                            <td>100% long-duration government bonds</td>
+                            <td>Pure duration play, flight-to-quality baseline</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="collapsible">Full Performance Metrics Tables</button>
+            <div class="collapsible-content">
+                <h4>Complete KPI Comparison</h4>
+                <p>All metrics for Rule-Based vs SAA Benchmark over the full 661-month period (Dec 1969 - Dec 2024):</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Rule-Based</th>
+                            <th>SAA Benchmark</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Annualized Return</td><td class="number">5.887%</td><td class="number">5.182%</td></tr>
+                        <tr><td>Annualized Volatility</td><td class="number">3.109%</td><td class="number">4.850%</td></tr>
+                        <tr><td>Sharpe Ratio</td><td class="number highlight">1.894</td><td class="number">1.069</td></tr>
+                        <tr><td>Sortino Ratio</td><td class="number">3.084</td><td class="number">1.643</td></tr>
+                        <tr><td>Calmar Ratio</td><td class="number">0.583</td><td class="number">0.319</td></tr>
+                        <tr><td>Maximum Drawdown</td><td class="number">-10.096%</td><td class="number">-16.227%</td></tr>
+                        <tr><td>Average Drawdown</td><td class="number">-1.554%</td><td class="number">-2.582%</td></tr>
+                        <tr><td>Max DD Duration (months)</td><td class="number">44</td><td class="number">37</td></tr>
+                        <tr><td>VaR 95%</td><td class="number">-1.061%</td><td class="number">-1.797%</td></tr>
+                        <tr><td>CVaR 95%</td><td class="number">-1.532%</td><td class="number">-2.693%</td></tr>
+                        <tr><td>VaR 99%</td><td class="number">-1.778%</td><td class="number">-2.934%</td></tr>
+                        <tr><td>CVaR 99%</td><td class="number">-2.149%</td><td class="number">-4.075%</td></tr>
+                        <tr><td>Win Rate (Monthly)</td><td class="number">73.22%</td><td class="number">66.26%</td></tr>
+                        <tr><td>12-Month Loss Probability</td><td class="number">7.08%</td><td class="number">13.23%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button class="collapsible">Validation & Quality Assurance Results</button>
+            <div class="collapsible-content">
+                <h4>Regime Validation Summary</h4>
+                <p>Statistical validation confirms regime classification effectiveness:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Regime</th>
+                            <th>Check Type</th>
+                            <th>Safe Assets Sharpe</th>
+                            <th>Risky Assets Sharpe</th>
+                            <th>Credit Sharpe</th>
+                            <th>Gov Sharpe</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Crisis</td>
+                            <td>Safe vs Risky</td>
+                            <td class="number positive">2.49</td>
+                            <td class="number negative">-0.08</td>
+                            <td class="number">-</td>
+                            <td class="number">-</td>
+                        </tr>
+                        <tr>
+                            <td>Risk-Off</td>
+                            <td>Safe vs Risky</td>
+                            <td class="number">1.31</td>
+                            <td class="number">1.86</td>
+                            <td class="number">-</td>
+                            <td class="number">-</td>
+                        </tr>
+                        <tr>
+                            <td>Neutral</td>
+                            <td>Safe vs Risky</td>
+                            <td class="number">0.84</td>
+                            <td class="number">1.00</td>
+                            <td class="number">-</td>
+                            <td class="number">-</td>
+                        </tr>
+                        <tr>
+                            <td>Risk-On</td>
+                            <td>Safe vs Risky</td>
+                            <td class="number">1.64</td>
+                            <td class="number">2.00</td>
+                            <td class="number">-</td>
+                            <td class="number">-</td>
+                        </tr>
+                        <tr>
+                            <td>Risk-On</td>
+                            <td>Credit vs Gov</td>
+                            <td class="number">-</td>
+                            <td class="number">-</td>
+                            <td class="number">1.61</td>
+                            <td class="number">1.64</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Allocation Verification</h4>
+                <ul>
+                    <li>✓ All allocations sum to 100% at every rebalancing date</li>
+                    <li>✓ No leverage (all weights ≥ 0)</li>
+                    <li>✓ Quarterly rebalancing executed correctly</li>
+                    <li>✓ 3-month smoothing window applied properly</li>
+                    <li>✓ Risk controls trigger appropriately (volatility, drawdown, tail hedging)</li>
+                    <li>✓ Tactical tilts remain within constraints (max 15pp per tilt, 15pp total)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Appendix -->
+        <section id="appendix">
+            <h2>Appendix</h2>
+
+            <h3>Project Files</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>File Type</th>
+                        <th>File Name</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Notebook</strong></td>
+                        <td>Regime_Aware_Asset_Allocation_Engine.ipynb</td>
+                        <td>Main implementation with full methodology, code, and analysis</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><strong>Input Data</strong></td>
+                        <td>master_indicators_dataset_monthly.csv</td>
+                        <td>Monthly macroeconomic indicators (1,011 months)</td>
+                    </tr>
+                    <tr>
+                        <td>master_asset_data.csv</td>
+                        <td>Asset price data for 16 instruments (661 months)</td>
+                    </tr>
+                    <tr>
+                        <td>master_indicators_dataset_processed.csv</td>
+                        <td>Processed indicator data with regime labels</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="3"><strong>Visualizations</strong></td>
+                        <td>regime_classification_visualization.png</td>
+                        <td>Three-panel regime framework chart</td>
+                    </tr>
+                    <tr>
+                        <td>correlation_matrix.png</td>
+                        <td>Full asset correlation heatmap</td>
+                    </tr>
+                    <tr>
+                        <td>avg_allocation_by_regime.png</td>
+                        <td>Bar chart of allocations by regime</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="5"><strong>Performance</strong></td>
+                        <td>comprehensive_kpis.csv</td>
+                        <td>Extended KPIs (Sortino, Calmar, VaR, CVaR)</td>
+                    </tr>
+                    <tr>
+                        <td>performance_metrics_primary.csv</td>
+                        <td>Primary comparison (Rule-Based vs SAA)</td>
+                    </tr>
+                    <tr>
+                        <td>regime_performance_primary.csv</td>
+                        <td>Performance by regime</td>
+                    </tr>
+                    <tr>
+                        <td>regime_validation_summary.csv</td>
+                        <td>Statistical regime validation</td>
+                    </tr>
+                    <tr>
+                        <td>crisis_downside_performance_ALL.csv</td>
+                        <td>All crisis periods consolidated</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4"><strong>Allocations</strong></td>
+                        <td>rule_based_allocations_final.csv</td>
+                        <td>Final allocations with risk controls</td>
+                    </tr>
+                    <tr>
+                        <td>avg_allocation_by_class_regime.csv</td>
+                        <td>Average class allocations by regime</td>
+                    </tr>
+                    <tr>
+                        <td>weights_*.csv (4 files)</td>
+                        <td>Time series of weights (Rule, MV, RP, SW)</td>
+                    </tr>
+                    <tr>
+                        <td>allocations_*_[period].csv (36 files)</td>
+                        <td>Crisis period allocations (asset & class level)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Crisis Analysis</strong></td>
+                        <td>crisis_allocations_summary.xlsx</td>
+                        <td>Master workbook with all crisis period data</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Methodology References</h3>
+            <ul>
+                <li><strong>Regime Detection:</strong> Dynamic inverse-variance weighting of policy and market indicators</li>
+                <li><strong>Allocation Framework:</strong> Regime-specific baselines with tactical tilts</li>
+                <li><strong>Risk Management:</strong> 4-layer system (vol targeting, DD defense, tail hedging, DD budget)</li>
+                <li><strong>Rebalancing:</strong> Quarterly with 3-month smoothing</li>
+                <li><strong>Covariance Estimation:</strong> 20% Ledoit-Wolf shrinkage</li>
+            </ul>
+
+            <h3>Key Assumptions</h3>
+            <ul>
+                <li>No transaction costs or taxes included</li>
+                <li>Perfect liquidity assumed for all assets</li>
+                <li>Quarterly rebalancing feasible without market impact</li>
+                <li>Indicator data available in real-time (no lag)</li>
+                <li>TIPS data backfilled using available history (introduced mid-1990s)</li>
+                <li>Safe-haven FX (CHF/JPY) limited to recent data (2.1% coverage)</li>
+            </ul>
+
+            <h3>Disclaimers</h3>
+            <div class="info-box warning">
+                <h4>Important Notice</h4>
+                <ul>
+                    <li>Past performance does not guarantee future results</li>
+                    <li>This is a research model and not investment advice</li>
+                    <li>Backtest results may not reflect real-world implementation challenges</li>
+                    <li>Transaction costs, taxes, and slippage would reduce returns</li>
+                    <li>Asset availability and data quality vary across the full historical period</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>Regime-Aware Fixed Income Portfolio Allocation Model</strong></p>
+        <p>Analysis Period: December 1969 - December 2024 (661 months)</p>
+        <p>Generated: December 2024</p>
+    </footer>
+
+    <script>
+        // Collapsible sections
+        var coll = document.getElementsByClassName("collapsible");
+        for (var i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    content.classList.remove("active");
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    content.classList.add("active");
+                }
+            });
+        }
+
+        // Tab switching
+        function switchTab(evt, tabName) {
+            var i, tabcontent, tabbuttons;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tabbuttons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabbuttons.length; i++) {
+                tabbuttons[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
