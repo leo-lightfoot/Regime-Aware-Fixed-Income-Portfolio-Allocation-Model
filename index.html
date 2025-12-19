@@ -526,12 +526,12 @@
         <div class="container">
             <h1>Regime-Aware Fixed Income Model</h1>
             <ul>
-                <li><a href="#overview">Overview</a></li>
                 <li><a href="#presentation">Presentation</a></li>
-                <li><a href="#methodology">Methodology</a></li>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#methodology">Technical Ref</a></li>
                 <li><a href="#regime-analysis">Regimes</a></li>
                 <li><a href="#performance">Performance</a></li>
-                <li><a href="#crisis">Crisis Analysis</a></li>
+                <li><a href="#crisis">Stress Tests</a></li>
             </ul>
         </div>
     </nav>
@@ -568,6 +568,20 @@
     </div>
 
     <div class="container">
+        <!-- Presentation PDF (Moved to Top) -->
+        <section id="presentation">
+            <h2>Full Presentation</h2>
+            <p>Complete presentation covering problem statement, solution architecture, research validation, backtesting methodology, and implementation roadmap.</p>
+
+            <div class="pdf-container">
+                <iframe src="RFP.pdf" type="application/pdf"></iframe>
+            </div>
+
+            <p style="text-align: center; margin-top: 1rem; color: var(--gray-600); font-size: 0.9rem;">
+                <a href="RFP.pdf" download style="color: var(--primary); text-decoration: none; font-weight: 500;">Download Presentation (PDF)</a>
+            </p>
+        </section>
+
         <!-- Executive Summary -->
         <section id="overview">
             <h2>Executive Summary</h2>
@@ -582,196 +596,71 @@
                 <p>Sharpe ratio of <strong>1.89</strong> vs SAA benchmark's <strong>1.07</strong> (77.2% improvement)</p>
             </div>
 
-            <h3>Project Overview</h3>
-            <p>This model implements a sophisticated regime-aware asset allocation engine designed for fixed-income portfolios. The strategy dynamically adjusts allocations based on macroeconomic indicators to detect market regimes and optimize for capital preservation while achieving positive risk-adjusted returns.</p>
-
             <h3>Data Coverage</h3>
             <ul>
                 <li><strong>Analysis Period:</strong> December 1969 - December 2024 (661 months)</li>
                 <li><strong>Asset Universe:</strong> 16 individual fixed-income and safe-haven assets</li>
-                <li><strong>Asset Classes:</strong> 8 strategic categories</li>
+                <li><strong>Asset Classes:</strong> 8 strategic categories (Cash/Short, Gov Long, TIPS, IG, HY, Gold, FX)</li>
                 <li><strong>Macro Indicators:</strong> 12 policy and market-based signals</li>
-                <li><strong>Crisis Scenarios Tested:</strong> 6 historical periods including GFC, COVID, Inflation surge</li>
+                <li><strong>Crisis Scenarios Tested:</strong> 6 historical periods (Dotcom, GFC, COVID, Inflation 2022, etc.)</li>
             </ul>
-
-            <h3>Key Achievements</h3>
-            <div class="grid-2">
-                <div class="card">
-                    <h4>Superior Risk-Adjusted Performance</h4>
-                    <ul>
-                        <li>Sharpe Ratio: 1.89 vs 1.07 (+77.2%)</li>
-                        <li>Sortino Ratio: 3.08 vs 1.64 (+87.8%)</li>
-                        <li>Calmar Ratio: 0.58 vs 0.32 (+82.0%)</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h4>Enhanced Capital Preservation</h4>
-                    <ul>
-                        <li>Max Drawdown: -10.1% vs -16.2% (+37.8%)</li>
-                        <li>VaR 95%: -1.06% vs -1.80% (+41.0%)</li>
-                        <li>CVaR 95%: -1.53% vs -2.69% (+43.1%)</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h4>Higher Returns with Lower Volatility</h4>
-                    <ul>
-                        <li>Ann. Return: 5.89% vs 5.18% (+13.6%)</li>
-                        <li>Ann. Volatility: 3.11% vs 4.85% (-35.9%)</li>
-                        <li>Win Rate: 73.2% vs 66.3%</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h4>Crisis Performance</h4>
-                    <ul>
-                        <li>Best Sharpe in Crisis Regime: 2.32</li>
-                        <li>GFC Max DD: -3.5% vs SAA -7.6%</li>
-                        <li>COVID Sharpe: 3.00 vs SAA 1.90</li>
-                    </ul>
-                </div>
-            </div>
         </section>
 
-        <!-- Presentation PDF -->
-        <section id="presentation">
-            <h2>Project Presentation</h2>
-            <p>Detailed presentation slides covering the methodology, implementation, and results of the regime-aware allocation strategy.</p>
-
-            <div class="pdf-container">
-                <iframe src="RFP.pdf" type="application/pdf"></iframe>
-            </div>
-
-            <p style="text-align: center; margin-top: 1rem; color: var(--gray-600); font-size: 0.9rem;">
-                <a href="RFP.pdf" download style="color: var(--primary); text-decoration: none; font-weight: 500;">Download Presentation (PDF)</a>
-            </p>
-        </section>
-
-        <!-- Methodology -->
+        <!-- Technical Reference -->
         <section id="methodology">
-            <h2>Methodology</h2>
+            <h2>Technical Reference</h2>
 
-            <h3>Regime Classification Framework</h3>
-            <p>The regime detection system combines policy-based and market-based indicators using dynamic inverse-variance weighting to identify four distinct market regimes.</p>
-
-            <h4>Primary Score (60% Weight): Policy-Based Indicators</h4>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Indicator</th>
-                        <th>Weight</th>
-                        <th>Rationale</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Economic Policy Uncertainty (EPU)</td>
-                        <td class="number">60%</td>
-                        <td>Captures uncertainty around fiscal, regulatory, and monetary policy</td>
-                    </tr>
-                    <tr>
-                        <td>Geopolitical Risk (GPR)</td>
-                        <td class="number">15%</td>
-                        <td>Measures geopolitical tensions and war risk</td>
-                    </tr>
-                    <tr>
-                        <td>Inflation YoY</td>
-                        <td class="number">15%</td>
-                        <td>Tracks inflationary pressures affecting fixed income</td>
-                    </tr>
-                    <tr>
-                        <td>Government Spending/GDP</td>
-                        <td class="number">10%</td>
-                        <td>Indicates fiscal expansion or contraction</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h4>Secondary Score (40% Weight): Market-Based Indicators</h4>
-            <ul>
-                <li><strong>VIX (Volatility Index):</strong> Market fear gauge</li>
-                <li><strong>Investment Grade Spreads:</strong> Credit market stress</li>
-                <li><strong>High Yield Spreads:</strong> Risk appetite indicator</li>
-                <li><strong>Unemployment Rate:</strong> Economic health measure</li>
-                <li><strong>Yield Curve Spread (10Y-2Y):</strong> Recession predictor</li>
-                <li><strong>10Y Treasury Yield Change:</strong> Interest rate dynamics</li>
-            </ul>
-
-            <h4>Regime Definitions</h4>
+            <h3>Regime Classification Thresholds</h3>
             <table>
                 <thead>
                     <tr>
                         <th>Regime</th>
                         <th>Percentile Threshold</th>
-                        <th>Frequency</th>
-                        <th>Characteristics</th>
+                        <th>Historical Frequency</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><strong>Crisis</strong></td>
-                        <td class="number">&gt;80th (Top 20%)</td>
+                        <td class="number">&gt;80th percentile</td>
                         <td class="number">20.9% (208 months)</td>
-                        <td>Extreme policy uncertainty, high volatility, market stress</td>
                     </tr>
                     <tr>
                         <td><strong>Risk-Off</strong></td>
-                        <td class="number">60th-80th</td>
+                        <td class="number">60th-80th percentile</td>
                         <td class="number">19.8% (197 months)</td>
-                        <td>Elevated uncertainty, defensive positioning</td>
                     </tr>
                     <tr>
                         <td><strong>Neutral</strong></td>
-                        <td class="number">40th-60th</td>
+                        <td class="number">40th-60th percentile</td>
                         <td class="number">18.8% (187 months)</td>
-                        <td>Moderate environment, balanced conditions</td>
                     </tr>
                     <tr>
                         <td><strong>Risk-On</strong></td>
-                        <td class="number">&lt;40th (Bottom 40%)</td>
+                        <td class="number">&lt;40th percentile</td>
                         <td class="number">40.6% (404 months)</td>
-                        <td>Low uncertainty, growth conditions, stable policy</td>
                     </tr>
                 </tbody>
             </table>
-
-            <h3>Core Strategy Components</h3>
-            <div class="grid-2">
-                <div class="card">
-                    <h4>Allocation Strategy</h4>
-                    <ul>
-                        <li>Regime-specific baseline allocations for 4 regimes</li>
-                        <li>Tactical tilts based on inflation, spending, and volatility signals</li>
-                        <li>Quarterly rebalancing with 3-month smoothing</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h4>Risk Management (4 Layers)</h4>
-                    <ul>
-                        <li>Layer 1: Volatility targeting (3% annualized)</li>
-                        <li>Layer 2: Drawdown defense (-5% trigger)</li>
-                        <li>Layer 3: Tail hedging (VIX > 30)</li>
-                        <li>Layer 4: Drawdown budget monitoring</li>
-                    </ul>
-                </div>
-            </div>
         </section>
 
-        <!-- Regime Analysis -->
+        <!-- Regime Analysis & Visualizations -->
         <section id="regime-analysis">
-            <h2>Regime Analysis</h2>
+            <h2>Regime Analysis & Visualizations</h2>
 
-            <h3>Regime Classification Visualization</h3>
+            <h3>Regime Classification Framework</h3>
             <div class="image-container">
                 <img src="Outputs/regime_classification_visualization.png" alt="Regime Classification Framework">
-                <p class="image-caption">Figure 1: Three-panel regime classification framework showing (A) Combined regime score with percentile thresholds, (B) Primary vs Secondary score components with dynamic weights, (C) Color-coded regime timeline from 1985-2024</p>
+                <p class="image-caption">Three-panel framework: (A) Combined regime score with percentile thresholds, (B) Dynamic variance weighting between Primary/Secondary scores, (C) Historical regime timeline 1985-2024</p>
             </div>
 
-            <h3>Average Allocation by Regime</h3>
+            <h3>Allocation by Regime</h3>
             <div class="image-container">
                 <img src="Outputs/avg_allocation_by_regime.png" alt="Average Allocation by Asset Class & Regime">
-                <p class="image-caption">Figure 2: Average allocation by asset class across four regimes, showing clear defensive shifts in Crisis (high cash/government) vs offensive positioning in Risk-On (high IG/HY)</p>
+                <p class="image-caption">Average allocation across four regimes showing defensive shift in Crisis (41% cash) vs offensive positioning in Risk-On (42% IG, 23% HY)</p>
             </div>
 
-            <h3>Regime-Specific Allocation Summary</h3>
+            <h3>Asset Allocation Table</h3>
             <table>
                 <thead>
                     <tr>
@@ -842,7 +731,7 @@
                 </tbody>
             </table>
 
-            <h3>Strategy Performance by Regime</h3>
+            <h3>Performance by Regime</h3>
             <table>
                 <thead>
                     <tr>
@@ -885,57 +774,18 @@
                 </tbody>
             </table>
 
-            <div class="info-box success">
-                <h4>Best Performance in Crisis Regime</h4>
-                <p>The strategy achieves its highest Sharpe ratio (2.32) during Crisis periods, validating the defensive positioning and crisis hedge allocations. This demonstrates exceptional capital preservation during market stress.</p>
-            </div>
-        </section>
-
-        <!-- Asset Analysis -->
-        <section id="asset-analysis">
-            <h2>Asset Analysis</h2>
-
             <h3>Asset Correlation Matrix</h3>
             <div class="image-container">
                 <img src="Outputs/correlation_matrix.png" alt="Asset Correlation Matrix">
-                <p class="image-caption">Figure 3: Full-period correlation matrix across 16 assets showing diversification opportunities (green indicates positive correlation, red indicates negative correlation)</p>
-            </div>
-
-            <div class="info-box">
-                <h4>Portfolio Construction Implication</h4>
-                <p>The correlation structure validates the strategy's use of Gold, safe-haven FX, and short-term Treasuries as effective diversifiers during crisis periods when traditional credit assets underperform.</p>
+                <p class="image-caption">Full-period correlation matrix across 16 assets validating diversification strategy</p>
             </div>
         </section>
 
         <!-- Performance -->
         <section id="performance">
-            <h2>Performance Results</h2>
+            <h2>Performance Metrics</h2>
 
-            <h3>Strategy Comparison Overview</h3>
-            <div class="grid-2">
-                <div class="card">
-                    <h4>Rule-Based Strategy (Primary)</h4>
-                    <ul>
-                        <li><strong>Ann. Return:</strong> 5.89%</li>
-                        <li><strong>Ann. Volatility:</strong> 3.11%</li>
-                        <li><strong>Sharpe Ratio:</strong> <span class="highlight positive">1.89</span></li>
-                        <li><strong>Max Drawdown:</strong> -10.1%</li>
-                        <li><strong>Win Rate:</strong> 73.2%</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h4>SAA Benchmark</h4>
-                    <ul>
-                        <li><strong>Ann. Return:</strong> 5.18%</li>
-                        <li><strong>Ann. Volatility:</strong> 4.85%</li>
-                        <li><strong>Sharpe Ratio:</strong> 1.07</li>
-                        <li><strong>Max Drawdown:</strong> -16.2%</li>
-                        <li><strong>Win Rate:</strong> 66.3%</li>
-                    </ul>
-                </div>
-            </div>
-
-            <h3>Comprehensive Performance Metrics</h3>
+            <h3>Full Period Results (1969-2024)</h3>
             <table>
                 <thead>
                     <tr>
@@ -1008,33 +858,19 @@
                     </tr>
                 </tbody>
             </table>
-
-            <div class="info-box success">
-                <h4>Outstanding Risk-Adjusted Performance</h4>
-                <p>The Rule-Based strategy demonstrates exceptional performance across all metrics:</p>
-                <ul>
-                    <li><strong>77% improvement in Sharpe ratio</strong> - delivering significantly better risk-adjusted returns</li>
-                    <li><strong>38% shallower maximum drawdown</strong> - superior capital preservation</li>
-                    <li><strong>43-47% improvement in tail risk metrics</strong> (CVaR) - better downside protection</li>
-                    <li><strong>46% lower probability of 12-month losses</strong> - more consistent performance</li>
-                </ul>
-            </div>
         </section>
 
         <!-- Crisis Analysis -->
         <section id="crisis">
-            <h2>Crisis Period Analysis</h2>
+            <h2>Historical Stress Testing</h2>
 
-            <p>The strategy was tested across six distinct historical periods representing different market regimes and stress scenarios:</p>
-
-            <h3>Crisis Periods Overview</h3>
+            <h3>Test Periods</h3>
             <table>
                 <thead>
                     <tr>
                         <th>Period</th>
                         <th>Dates</th>
                         <th>Duration</th>
-                        <th>Key Characteristics</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1042,43 +878,36 @@
                         <td><strong>Dotcom Bust</strong></td>
                         <td>Jan 2000 - Dec 2002</td>
                         <td>36 months</td>
-                        <td>Tech bubble collapse, equity bear market, recession</td>
                     </tr>
                     <tr>
-                        <td><strong>GFC (Global Financial Crisis)</strong></td>
+                        <td><strong>GFC</strong></td>
                         <td>Jul 2007 - Dec 2009</td>
                         <td>30 months</td>
-                        <td>Credit market collapse, severe recession, systemic crisis</td>
                     </tr>
                     <tr>
                         <td><strong>Calm Period</strong></td>
                         <td>Jan 2017 - Dec 2019</td>
                         <td>36 months</td>
-                        <td>Low volatility, stable growth, risk-on baseline</td>
                     </tr>
                     <tr>
-                        <td><strong>COVID-19 Pandemic</strong></td>
+                        <td><strong>COVID-19</strong></td>
                         <td>Jan 2020 - Dec 2020</td>
                         <td>12 months</td>
-                        <td>Pandemic shock, extreme volatility, V-shaped recovery</td>
                     </tr>
                     <tr>
                         <td><strong>Inflation Surge</strong></td>
                         <td>Jul 2021 - Dec 2022</td>
                         <td>18 months</td>
-                        <td>Simultaneous bond/equity selloff, rate hiking cycle</td>
                     </tr>
                     <tr>
                         <td><strong>2024 Volatility</strong></td>
                         <td>Jan 2024 - Dec 2024</td>
                         <td>12 months</td>
-                        <td>Recent market conditions, policy uncertainty</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3>Consolidated Crisis Performance</h3>
-            <p>The "Preservation Score" is a composite metric (lower is better) combining Max Drawdown (40%), VaR (35%), and Probability of Loss (25%).</p>
+            <h3>Performance by Historical Period</h3>
 
             <table>
                 <thead>
@@ -1210,24 +1039,13 @@
                     </tr>
                 </tbody>
             </table>
-
-            <div class="info-box success">
-                <h4>Key Findings</h4>
-                <ul>
-                    <li><strong>Perfect Preservation Score:</strong> Rule-Based achieves best-in-class preservation score (0.00) across ALL six periods</li>
-                    <li><strong>GFC Performance:</strong> Limited drawdown to -3.5% vs SAA's -7.6% during the worst financial crisis</li>
-                    <li><strong>COVID Resilience:</strong> Delivered exceptional Sharpe of 3.00 with minimal drawdown (-0.7%)</li>
-                    <li><strong>Inflation Hedge:</strong> Even during the challenging 2022 inflation surge, drawdown was -9.4% vs SAA's -16.2%</li>
-                </ul>
-            </div>
         </section>
     </div>
 
     <!-- Footer -->
     <footer>
-        <p><strong>Regime-Aware Fixed Income Portfolio Allocation Model</strong></p>
-        <p>Analysis Period: December 1969 - December 2024 (661 months)</p>
-        <p>Generated: December 2024</p>
+        <p>Regime-Aware Fixed Income Portfolio Allocation Model</p>
+        <p>Analysis Period: December 1969 - December 2024 (661 months) | Last Updated: December 2025</p>
     </footer>
 
     <script>
